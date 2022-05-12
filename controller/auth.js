@@ -33,6 +33,10 @@ exports.postSignUp = async (req, res, next)=>{
         }
 }
 
+exports.getLogin = (req, res, next)=>{
+    res.render("index");
+}
+
 exports.postLogin = async (req, res, next)=>{
     const email = req.body.email;
     const password = req.body.password;
@@ -51,6 +55,12 @@ exports.postLogin = async (req, res, next)=>{
                 throw error;
             }
 
+            req.session.isLoggedIn = true;
+            req.session.user = user;
+            await req.session.save();
+            
+            res.redirect("/message/");
+
         const token = jwt.sign({
             email: user.email,
             userId: user._id.toString()
@@ -58,11 +68,11 @@ exports.postLogin = async (req, res, next)=>{
         'thisissupersupersecretkey',
         {expiresIn: '1h'}
         );
-        res.status(200).json({
-            message: "Login Successful",
-            token: token, 
-            userId: user._id.toString() 
-        });
+        // res.status(200).json({
+        //     message: "Login Successful",
+        //     token: token, 
+        //     userId: user._id.toString() 
+        // });
     }catch(err){
         if(!err.statusCode){
             err.statusCode = 500;

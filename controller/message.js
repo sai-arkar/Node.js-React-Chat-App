@@ -1,6 +1,17 @@
 const User = require("../model/user");
 const Message = require("../model/message");
 
+exports.getIndex = (req, res, next)=>{
+    //console.log(req.user)
+    User.find()
+        .then(users=>{
+            res.render("message", {
+                LoginUser: req.user._id,
+                users: users
+            });
+        })
+}
+
 exports.postMessage =async (req, res, next)=>{
     const senderId = req.body.senderId;
     const receiverId = req.body.receiverId;

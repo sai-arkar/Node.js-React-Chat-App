@@ -3,6 +3,8 @@ const router = express.Router();
 
 const messageControllers = require("../controller/message");
 
+router.get("/", messageControllers.getIndex);
+
 router.post("/send", messageControllers.postMessage);
 
 router.get("/msg/:rId", messageControllers.getMessages);
