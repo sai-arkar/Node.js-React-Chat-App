@@ -1,19 +1,15 @@
 const Conversation = require("../model/conversation");
 
 // join user to chat
-exports.userJoin = (socketId, senderId, receiverId)=>{
+let conver;
+async function userJoin(socketId, senderId, receiverId){
      const con = new Conversation({
           socketId: socketId,
           senderId: senderId,
           receiverId: receiverId
      });
-     con.save()
-          .then(con=>{
-               return con;
-          })
-          .catch(err=>{
-               console.log(err);
-          })
+     conver = await con.save();
+     return conver;
 }
 
 // get current user

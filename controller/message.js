@@ -6,7 +6,7 @@ exports.getIndex = (req, res, next)=>{
     User.find()
         .then(users=>{
             res.render("message", {
-                LoginUser: req.user._id,
+                LoginUser: req.user,
                 users: users
             });
         })

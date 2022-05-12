@@ -10,8 +10,10 @@ const URI = "mongodb+srv://root:root@cluster0.hl7kn.mongodb.net/ChatApp?retryWri
 const PORT = 8080 || process.env.PORT;
 
 const User = require("./model/user");
+const Conversation = require("./model/conversation");
 const authRoutes = require("./routes/auth");
 const msgRoutes = require("./routes/message");
+const { userJoin } = require("./util/users");
 
 const app = express();
 const store = new MongoDBStore({
@@ -89,10 +91,22 @@ mongoose.connect(URI)
         const io = require("./socket").init(server);
         io.on('connection', (socket)=>{
             console.log("Client Connected");
-
-            socket.on("chatMessage", msg=>{
-                //console.log(msg);
-                io.emit("message" ,msg);
+            
+            socket.on("joinSenRec", ({sender, receiver})=>{
+                const con = new Conversation({
+                    socketId: socket.id,
+                    senderId: sender,
+                    receiverId: receiver
+                })
+                con.save()
+                    .then(con => {
+                        socket.join(receiver);
+                        socket.on("chatMessage", msg=>{
+                            //console.log(msg);
+                            io.to(receiver).emit("message" ,msg);
+                        })
+                    })
+                    .catch(err => console.log(err));
             })
         })
     }).catch((err) => {
